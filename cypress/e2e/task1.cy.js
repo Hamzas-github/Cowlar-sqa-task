@@ -1,4 +1,4 @@
-describe('Cowlar Task', () => {
+describe('Task1', () => {
   it('form testing', () => {
     cy.viewport(1600, 1000)
     cy.visit('/')
