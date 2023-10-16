@@ -1,53 +1,74 @@
-describe('Interactions on ToolsQA website', () => {
-    beforeEach(() => {
-      cy.visit('https://demoqa.com/')
-    })
-  
-    it('Navigate to Interactions Page', () => {
-      cy.contains('Interactions').click()
-      cy.url().should('include', '/interaction')
-    })
-  
-    it('Verify Sidebar tabs', () => {
-        cy.contains('Interactions').click();
-        cy.get('.accordion').within(() => {
-          cy.contains('Elements');
-          cy.contains('Forms');
-          cy.contains('Alerts, Frame & Windows');
-          cy.contains('Widgets');
-          cy.contains('Interactions');
-          cy.contains('Book Store Application');
-        });
+describe('Task2', () => {
+  beforeEach(() => {
+    cy.visit('https://demoqa.com/');
+  });
+
+  it('Steps to Verify Resizability on TOOLS QA Page', () => {
+    cy.contains('Interactions').click();
+    cy.url().should('include', '/interaction');
+
+    cy.get('.accordion').within(() => {
+      cy.contains('Elements');
+      cy.contains('Forms');
+      cy.contains('Alerts, Frame & Windows');
+      cy.contains('Widgets');
+      cy.contains('Interactions');
+      cy.contains('Book Store Application');
+    });
+
+    cy.contains('Resizable').click();
+    cy.contains('Resizable').should('be.visible');
+
+    cy.get("#resizableBoxWithRestriction")
+      .should("have.css", "width", "200px")
+      .should("have.css", "height", "200px");
+
+    cy.get('#resizableBoxWithRestriction')
+      .find('.react-resizable-handle-se')
+      .trigger("mousedown", { which: 1 }, { force: true })
+      .trigger("mousemove", { clientX: -60, clientY: -60 }, { force: true })
+      .trigger("mouseup", { force: true });
+
+    cy.get('#resizableBoxWithRestriction').should('have.css', 'height', '150px');
+    cy.get('#resizableBoxWithRestriction').should('have.css', 'width', '150px');
+
+    cy.get('#resizableBoxWithRestriction')
+      .find('.react-resizable-handle-se')
+      .trigger("mousedown", { which: 1 }, { force: true })
+      .trigger("mousemove", { clientX: 800, clientY: 500 }, { force: true })
+      .trigger("mouseup", { force: true });
+
+    cy.get('#resizableBoxWithRestriction').should('have.css', 'height', '300px');
+    cy.get('#resizableBoxWithRestriction').should('have.css', 'width', '500px');
+
+    cy.get('#resizable').should('have.class', 'react-resizable');
+
+    let initialWidth, initialHeight;
+
+    cy.get('#resizable')
+      .invoke('width')
+      .then((width) => (initialWidth = width));
+
+    cy.get('#resizable')
+      .invoke('height')
+      .then((height) => (initialHeight = height));
+
+    cy.get('#resizable')
+      .find('.react-resizable-handle-se')
+      .trigger('mousedown', { which: 1 }, { force: true })
+      .trigger('mousemove', { clientX: 800, clientY: 500 }, { force: true })
+      .trigger('mouseup', { force: true });
+
+    cy.get('#resizable')
+      .invoke('width')
+      .then((finalWidth) => {
+        expect(finalWidth).to.not.equal(initialWidth);
       });
-  
-      it.only('Resize Box 1 and verify dimensions', () => {
-        cy.contains('Interactions').click()
-        cy.contains('Resizable').click()
-        cy.contains('Resizable').should('be.visible')
-        cy.get('#resizableBoxWithRestriction').invoke('width').as('initialWidth')
-        cy.get('#resizableBoxWithRestriction').invoke('height').as('initialHeight')
-      
-        cy.get('#resizableBoxWithRestriction')
-        .find('.react-resizable-handle-se')
-        .trigger('mousedown', { which: 1 })
-        .trigger('mousemove', { clientX: 790, clientY: 300 })
-        .trigger('mouseup')
-            
-        cy.get('#resizableBoxWithRestriction').invoke('width').as('finalWidth')
-        cy.get('#resizableBoxWithRestriction').invoke('height').as('finalHeight')
-      
-        cy.get('@initialWidth').then((initialWidth) => {
-          cy.get('@initialHeight').then((initialHeight) => {
-            cy.get('@finalWidth').then((finalWidth) => {
-              cy.get('@finalHeight').then((finalHeight) => {
-                expect(finalWidth).to.be.at.least(150)
-                expect(finalWidth).to.be.at.most(500)
-                expect(finalHeight).to.be.at.least(150)
-                expect(finalHeight).to.be.at.most(300)
-              })
-            })
-          })
-        })
-      })
-    })
-  
+
+    cy.get('#resizable')
+      .invoke('height')
+      .then((finalHeight) => {
+        expect(finalHeight).to.not.equal(initialHeight);
+      });
+  });
+});
